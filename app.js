@@ -2,59 +2,28 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-
 // para leer .envs
 require('dotenv/config');
 
-const API = process.env.API_URL;
+// routers a colecciones
+const UserRouter = require('./routers/user');
+const CategoryRouter = require('./routers/category');
+const ProductRouter = require('./routers/product');
+const OrderRouter = require('./routers/order');
 
-// middleware para analizar las solicitudes entrantes y poder leer datos a json
+// middleware: para analizar las solicitudes entrantes y poder leer datos a json
 app.use(express.json());
-// para logging cada solicitud realizada
+// middleware: para logear cada solicitud realizada
 app.use(morgan('tiny'));
 
-const productSchema = mongoose.Schema({
-  name: String,
-  content: String,
-  image: String,
-  date: { type: Date, default: Date.now },
-  hidden: Boolean,
-  meta: {
-    votes: Number,
-    favs: Number,
-  },
-});
+// constants
+const API = process.env.API_URL;
 
-const Product = mongoose.model('Product', productSchema);
-
-app.get(`${API}/products`, async (req, res) => {
-  const productList = await Product.find();
-  if (!productList) {
-    res.status(500).json({ success: false });
-  }
-
-  res.send(productList);
-});
-
-app.post(`${API}/products`, (req, res) => {
-  const product = new Product({
-    name: req.body.name,
-    content: req.body.content,
-    image: req.body.image,
-  });
-
-  product
-    .save()
-    .then((createdProduct) => {
-      res.status(201).json(createdProduct);
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-        success: false,
-      });
-    });
-});
+// routers
+app.use(`${API}/users`, UserRouter);
+app.use(`${API}/categories`, CategoryRouter);
+app.use(`${API}/products`, ProductRouter);
+app.use(`${API}/orders`, OrderRouter);
 
 mongoose
   .connect(process.env.URI_CONNECT)
