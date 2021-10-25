@@ -2,8 +2,13 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const cors = require('cors');
 // para leer .envs
 require('dotenv/config');
+
+app.use(cors());
+// permitir OPTIONS HTTP
+app.options('*', cors());
 
 // routers a colecciones
 const UserRouter = require('./routers/user');
