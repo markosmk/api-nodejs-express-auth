@@ -1,0 +1,15 @@
+{
+  "name": "api-node-express",
+  "version": "1.0.0",
+  "description": "api with node and express",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "markosmk",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
