@@ -51,6 +51,55 @@ router.post('/', async (req, res) => {
   res.send(user);
 });
 
+router.put('/:id', async (req, res) => {
+  // con async await
+  try {
+    // check user exists
+    const userExists = await User.findById(req.params.id);
+    if (!userExists) {
+      return res.status(400).json({
+        success: false,
+        message: 'the user with the given Id not found.',
+      });
+    }
+    // comprobamos si cambia la contraseña actual
+    let newPassword;
+    if (req.body.password) {
+      newPassword = bcrypt.hashSync(req.body.password, 10);
+    } else {
+      newPassword = userExists.password;
+    }
+
+    // actualizamos datos usuario
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        name: req.body.name,
+        email: req.body.email,
+        password: newPassword,
+        phone: req.body.phone,
+        isAdmin: req.body.isAdmin,
+        apartment: req.body.apartment,
+        zip: req.body.zip,
+        city: req.body.city,
+        country: req.body.country,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'the user with the given Id cannnot be updated.',
+      });
+    }
+
+    return res.status(200).json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err });
+  }
+});
+
 router.post('/login', async (req, res) => {
   const secret = process.env.SECRET_JWT;
   try {
@@ -112,6 +161,36 @@ router.post('/register', async (req, res) => {
   } catch (err) {
     res.status(500).send({ error: err });
   }
+});
+
+router.get('/get/count', async (req, res) => {
+  try {
+    const customerCount = await User.estimatedDocumentCount();
+    if (!customerCount) {
+      res.status(500).json({ success: false });
+    }
+    res.send({ count: customerCount });
+  } catch (err) {
+    res.status(500).send({ success: false, error: err });
+  }
+});
+
+router.delete('/:id', (req, res) => {
+  User.findByIdAndRemove(req.params.id)
+    .then((user) => {
+      if (user) {
+        return res
+          .status(200)
+          .json({ success: true, message: 'user is deleted!' });
+      } else {
+        return res
+          .status(404)
+          .json({ success: false, message: 'user not found' });
+      }
+    })
+    .catch((err) => {
+      return res.status(400).json({ success: false, error: err });
+    });
 });
 
 module.exports = router;
