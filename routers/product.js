@@ -4,7 +4,6 @@ const { Product } = require('../models/product');
 const { Category } = require('../models/category');
 
 router.get('/', async (req, res) => {
-  const query = req.query;
   let filter = {};
   if (req.query.categories) {
     filter = { category: req.query.categories.split(',') };
