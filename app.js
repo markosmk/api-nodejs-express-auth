@@ -1,7 +1,7 @@
 // para leer .envs
 require('dotenv/config');
-
 const express = require('express');
+// configuracion express
 const app = express();
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -16,6 +16,7 @@ const OrderRouter = require('./routers/order');
 
 // constants
 const API = process.env.API_URL;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 // permitir OPTIONS HTTP
@@ -33,16 +34,22 @@ app.use(`${API}/users`, UserRouter);
 app.use(`${API}/categories`, CategoryRouter);
 app.use(`${API}/products`, ProductRouter);
 app.use(`${API}/orders`, OrderRouter);
+// Express Wildcard para resolver los errores 404
+app.get('*', function (req, res, next) {
+  const err = new Error("Page Doesn't Exist");
+  err.statusCode = 404;
+  next(err);
+});
 
 mongoose
   .connect(process.env.URI_CONNECT)
   .then(() => {
-    console.log('database conecction is ready...');
+    console.log('Database connection is ready...');
   })
   .catch((err) => {
     console.log(err);
   });
 
-app.listen(3000, () => {
-  console.log(`Server is runing in http://localhost:3000`);
+app.listen(PORT, () => {
+  console.log(`Server is runing in http://localhost:${PORT}`);
 });
