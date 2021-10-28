@@ -3,6 +3,7 @@ require('dotenv/config');
 const express = require('express');
 // configuracion express
 const app = express();
+const colors = require('colors');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -44,12 +45,12 @@ app.get('*', function (req, res, next) {
 mongoose
   .connect(process.env.URI_CONNECT)
   .then(() => {
-    console.log('Database connection is ready...');
+    console.log('Database connection is ready...'.magenta);
   })
   .catch((err) => {
     console.log(err);
   });
 
 app.listen(PORT, () => {
-  console.log(`Server is runing in http://localhost:${PORT}`);
+  console.log(`Server is runing in http://localhost:${PORT}`.yellow);
 });
