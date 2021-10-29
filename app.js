@@ -28,6 +28,7 @@ app.use(express.json());
 // middleware: para logear cada solicitud realizada
 app.use(morgan('tiny'));
 app.use(authJwt());
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
 app.use(errorHandler);
 
 // routers
